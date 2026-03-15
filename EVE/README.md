@@ -37,6 +37,18 @@ STL source: https://github.com/chirpy2605/voron/tree/main/V0/Dragon_Burner
 | Hotend Fan | 3010 axial | 2510 axial |
 | Cooling | Standard | Enhanced |
 
+## BTT Pi Environment
+
+| Item | Value |
+|------|-------|
+| User | biqu |
+| Hostname | bigtreetech-cb1 |
+| OS | Armbian (CB1) |
+| MCU Serial | `usb-Klipper_rp2040_504434040883CA1C-if00` |
+| Config Tool | armbian-config |
+| Monitoring | htop |
+| Local IP | 192.168.0.x |
+
 ## File Structure
 
 ```
