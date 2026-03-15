@@ -47,9 +47,10 @@
 
 | Qty | Part | Spec | Sourced |
 |-----|------|------|---------|
-| 1 | Hotend | Phaetus Dragon SF / Rapido HF | [ ] |
-| 1 | Heater Cartridge | 40W 24V (or 60W for Rapido) | [ ] |
-| 1 | Thermistor | ATC Semitec 104NT-4-R025H42G | [ ] |
+| 1 | Hotend | **Bambu Lab hotend** (bi-metal heatbreak, quick-swap nozzle) | [ ] |
+| 1 | Heater Cartridge | 48W 24V (Bambu Lab ceramic heater) | [ ] |
+| 1 | Thermistor | NTC 100K (Bambu Lab stock, Generic 3950 compatible) | [ ] |
+| 1 | Nozzle | Bambu Lab 0.4mm hardened steel / brass | [ ] |
 | 2 | Part Cooling Fan | **4010 Blower 24V** (dual fans) | [ ] |
 | 1 | Hotend Fan | **2510 Axial 24V** | [ ] |
 | 1 | Bowden Tube | PTFE 4x2mm (short section for extruder) | [ ] |

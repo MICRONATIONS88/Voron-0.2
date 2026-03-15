@@ -9,7 +9,7 @@
 | Motion System | CoreXY |
 | Firmware | Klipper |
 | Toolhead | Dragonburner |
-| Hotend | Dragon SF / Rapido |
+| Hotend | Bambu Lab hotend (bi-metal) |
 | Bed | 120mm Aluminum with DC heater |
 | MCU | BTT SKR Pico v1.0 |
 | SBC | BTT Pi v1.2 |
@@ -21,7 +21,7 @@ Dragonburner is a high-performance toolhead for Voron 0 with:
 - Dual 4010 blower fans for part cooling
 - 2510 axial fan for hotend cooling
 - Improved cooling duct geometry
-- Compatible with Dragon, Rapido, and other hotends
+- Compatible with Dragon, Rapido, Bambu Lab, and other hotends
 - CW2 / Galileo 2 extruder compatible
 
 STL source: https://github.com/chirpy2605/voron/tree/main/V0/Dragon_Burner
@@ -32,6 +32,7 @@ STL source: https://github.com/chirpy2605/voron/tree/main/V0/Dragon_Burner
 |---------|----------|-----------------|
 | SBC | Raspberry Pi | BTT Pi v1.2 |
 | Toolhead | Mini Stealthburner | Dragonburner |
+| Hotend | Dragon / Dragonfly | Bambu Lab (bi-metal) |
 | Part Fan | 1x 3010 blower | 2x 4010 blower |
 | Hotend Fan | 3010 axial | 2510 axial |
 | Cooling | Standard | Enhanced |
