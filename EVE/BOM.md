@@ -56,6 +56,12 @@
 | 1 | Bowden Tube | PTFE 4x2mm (short section for extruder) | [ ] |
 | 1 | Extruder | CW2 / Galileo 2 / Sherpa Mini | [ ] |
 
+## Lighting
+
+| Qty | Part | Spec | Sourced |
+|-----|------|------|---------|
+| 2 | NeoPixel Matchstick | WS2812 x10 LED strip (left + right) | [ ] |
+
 ## Bed
 
 | Qty | Part | Spec | Sourced |

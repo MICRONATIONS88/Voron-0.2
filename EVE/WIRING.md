@@ -46,6 +46,20 @@ FAN1 (gpio18) ──── 2510 Axial Hotend Fan (+/-)
 Both 4010 blowers are wired in parallel to the same FAN0 output.
 Ensure total current draw does not exceed the MOSFET rating (~1A).
 
+### NeoPixel LEDs (Matchstick)
+
+| LED | Pin | Count | Notes |
+|-----|-----|-------|-------|
+| NeoPixel (RGB header) | gpio24 | 20 | WS2812, GRB color order |
+
+**Wiring:**
+```
+SKR Pico RGB (gpio24) → Left Matchstick (10 LEDs) → Right Matchstick (10 LEDs)
+                         LED 1-10                     LED 11-20
+```
+- データラインをデイジーチェーン接続（Left OUT → Right IN）
+- 5V/GND は SKR Pico の RGB ヘッダーから供給
+
 ## BTT Pi v1.2 Connections
 
 | Connection | Method | Notes |
@@ -75,6 +89,7 @@ AC Inlet (w/ fuse & switch)
         |     +-- 2x 4010 blower fans (via FAN0)
         |     +-- 2510 hotend fan (via FAN1)
         |     +-- Stepper motors (A, B, Z, E)
+        |     +-- NeoPixel matchstick LEDs (via RGB header)
         |
         +-- DC-DC Buck 24V -> 5V
               |
