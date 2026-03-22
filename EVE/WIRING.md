@@ -25,7 +25,7 @@ UART Bus: TX=gpio8, RX=gpio9 (shared bus, addressed by uart_address)
 
 | Heater | Pin | Sensor Pin | Sensor Type |
 |--------|-----|------------|-------------|
-| Hotend (HE0) | gpio23 | gpio27 | ATC Semitec 104NT-4 |
+| Hotend (HE0) | gpio23 | gpio27 | Generic 3950 (Bambu Lab NTC 100K) |
 | Bed (HB) | gpio21 | gpio26 | Generic 3950 |
 
 ### Fans (Dragonburner Configuration)
