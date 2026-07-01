@@ -1,0 +1,128 @@
+########################################
+# Power Loss Recovery (PLR) – ADAM
+# ※ [save_variables] は printer.cfg に既存のため不要
+# ※ gcode_shell_command で plr_split.py を呼び出し
+# ※ PLR_RESUME が完全自動化（分割→印刷開始まで）
+########################################
+
+# --------------------------------------------------
+# G-code split スクリプト
+# --------------------------------------------------
+[gcode_shell_command plr_split]
+command: python3 /home/adam/printer_data/config/plr_split.py
+timeout: 60
+verbose: True
+
+# --------------------------------------------------
+# 30秒ごとに自動保存（印刷中のみ）
+# --------------------------------------------------
+[delayed_gcode _PLR_AUTOSAVE]
+initial_duration: 0
+gcode:
+    {% if printer.print_stats.state == "printing" %}
+        SAVE_PRINT_PROGRESS
+        UPDATE_DELAYED_GCODE ID=_PLR_AUTOSAVE DURATION=30
+    {% else %}
+        UPDATE_DELAYED_GCODE ID=_PLR_AUTOSAVE DURATION=0
+    {% endif %}
+
+# --------------------------------------------------
+# 起動8秒後に PLR データを確認して通知
+# --------------------------------------------------
+[delayed_gcode _PLR_BOOT_CHECK]
+initial_duration: 8
+gcode:
+    {% set svv = printer.save_variables.variables %}
+    {% if svv.resume_valid|default(0)|int == 1 and svv.resume_z|default(0)|float > 0 %}
+        M117 ⚡PLR: 復旧データあり!
+        RESPOND TYPE=echo MSG="⚡ PLR: 電源断データ検出！ Z={svv.resume_z}mm / Bed={svv.resume_bed_temp}°C / Ext={svv.resume_extruder_temp}°C"
+        RESPOND TYPE=echo MSG="▶ 復旧するには PLR_RESUME を実行してください"
+    {% endif %}
+
+# --------------------------------------------------
+# PLR_START: 印刷開始時に自動保存を起動
+# --------------------------------------------------
+[gcode_macro PLR_START]
+description: PLR自動保存を開始（PRINT_STARTから呼ぶ）
+gcode:
+    CLEAR_PRINT_PROGRESS
+    UPDATE_DELAYED_GCODE ID=_PLR_AUTOSAVE DURATION=30
+    RESPOND TYPE=echo MSG="PLR: 自動保存開始（30秒ごと）"
+
+# --------------------------------------------------
+# PLR_CLEAR: 印刷終了時に自動保存を停止＆データ消去
+# --------------------------------------------------
+[gcode_macro PLR_CLEAR]
+description: PLR自動保存を停止してデータをクリア
+gcode:
+    UPDATE_DELAYED_GCODE ID=_PLR_AUTOSAVE DURATION=0
+    CLEAR_PRINT_PROGRESS
+    RESPOND TYPE=echo MSG="PLR: 自動保存停止・データクリア完了"
+
+# --------------------------------------------------
+# PLR_STATUS: 現在の保存状態を確認
+# --------------------------------------------------
+[gcode_macro PLR_STATUS]
+description: PLR保存データを表示
+gcode:
+    {% set svv = printer.save_variables.variables %}
+    {% if svv.resume_valid|default(0)|int == 1 %}
+        RESPOND TYPE=echo MSG="PLR STATUS: Z={svv.resume_z}mm / Bed={svv.resume_bed_temp}°C / Ext={svv.resume_extruder_temp}°C / File={svv.resume_filename|default('unknown')}"
+    {% else %}
+        RESPOND TYPE=echo MSG="PLR STATUS: 保存データなし（resume_valid=0）"
+    {% endif %}
+
+# --------------------------------------------------
+# PLR_RESUME: 電源断から完全自動復旧
+# Z位置に移動 → Gコード自動分割 → 印刷自動開始
+# --------------------------------------------------
+[gcode_macro PLR_RESUME]
+description: 電源断・エラー後に自動でGコードを分割して印刷を再開する
+gcode:
+    {% set svv = printer.save_variables.variables %}
+    {% if svv.resume_valid|default(0)|int == 0 %}
+        RESPOND TYPE=error MSG="PLR: 復旧データがありません。"
+    {% elif svv.resume_filename|default('')|length == 0 %}
+        RESPOND TYPE=error MSG="PLR: ファイル名が保存されていません。新しいSAVE_PRINT_PROGRESSで印刷し直してください。"
+    {% else %}
+        {% set z = svv.resume_z|float %}
+        {% set bed_temp = svv.resume_bed_temp|default(60)|float %}
+        {% set extruder_temp = svv.resume_extruder_temp|default(200)|float %}
+        {% set filename = svv.resume_filename %}
+
+        # --- STEP 1: G-code分割 (プリンター待機状態のうちに実行して "Timer too close" を回避) ---
+        M117 PLR: Gコード分割中...
+        RESPOND TYPE=echo MSG="⚙️ PLR: plr_resume.gcode を生成中..."
+        RUN_SHELL_COMMAND CMD=plr_split
+
+        # --- STEP 2: 加熱・ホーミング・再開Z移動 ---
+        RESPOND TYPE=echo MSG="⚡ PLR復旧開始: Z={z}mm / Bed={bed_temp}°C / Ext={extruder_temp}°C / File={filename}"
+        M117 PLR: 加熱中...
+        M140 S{bed_temp}
+        M104 S150
+        G28
+        M190 S{bed_temp}
+        M109 S{extruder_temp}
+        G90
+        G1 X60 Y60 F6000
+        G1 Z{[z + 5.0, 10.0]|max} F1500
+        G92 E0
+        G1 E20 F150  # 2026-06-26 Claude: PLR復旧時のプライム不足対策(3mm->20mm)
+        G92 E0
+        G1 Z{z} F600
+
+        # --- STEP 3: 印刷開始準備 ---
+        RESPOND TYPE=echo MSG="✅ PLR: 分割完了。3秒後に印刷を開始します..."
+        M117 PLR: 印刷開始準備中...
+        UPDATE_DELAYED_GCODE ID=_PLR_START_PRINT DURATION=3
+    {% endif %}
+
+# --------------------------------------------------
+# 分割後3秒待って印刷開始
+# --------------------------------------------------
+[delayed_gcode _PLR_START_PRINT]
+initial_duration: 0
+gcode:
+    RESPOND TYPE=echo MSG="▶️ PLR: plr_resume.gcode の印刷を開始します"
+    SDCARD_PRINT_FILE FILENAME=plr_resume.gcode
+    UPDATE_DELAYED_GCODE ID=_PLR_AUTOSAVE DURATION=30

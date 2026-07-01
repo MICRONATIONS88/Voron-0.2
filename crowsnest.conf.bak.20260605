@@ -1,0 +1,12 @@
+[crowsnest]
+log_path: ~/printer_data/logs/crowsnest.log
+log_level: quiet
+
+# [cam 1] C920 は EVE に移設済みのためコメントアウト (2026-05-17)
+#[cam 1]
+#mode: ustreamer
+#port: 8080
+#device: /dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_EB4DC92F-video-index0
+#resolution: 1280x720
+#max_fps: 15
+#v4l2ctl: zoom_absolute=200

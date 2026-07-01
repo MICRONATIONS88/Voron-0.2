@@ -1,0 +1,21 @@
+[gcode_macro TIMELAPSE_TAKE_FRAME]
+variable_enabled: True
+variable_takingframe: False
+gcode:
+  {% if printer["gcode_macro TIMELAPSE_TAKE_FRAME"].enabled %}
+    {% if not printer["gcode_macro TIMELAPSE_TAKE_FRAME"].takingframe %}
+      SET_GCODE_VARIABLE MACRO=TIMELAPSE_TAKE_FRAME VARIABLE=takingframe VALUE=True
+      SAVE_GCODE_STATE NAME=TIMELAPSE_STATE
+      G90
+      G0 X115 Y115 F9000
+      G4 P500
+      {action_call_remote_method("timelapse_newframe")}
+      G4 P500
+      RESTORE_GCODE_STATE NAME=TIMELAPSE_STATE MOVE=1 MOVE_SPEED=200
+      SET_GCODE_VARIABLE MACRO=TIMELAPSE_TAKE_FRAME VARIABLE=takingframe VALUE=False
+    {% endif %}
+  {% endif %}
+
+[gcode_macro TIMELAPSE_RENDER]
+gcode:
+  {action_call_remote_method("timelapse_render", byrendermacro=True)}
