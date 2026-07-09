@@ -4,7 +4,7 @@ import sys
 import time
 import shutil
 
-VARIABLES_FILE = '/dev/shm/variables.cfg'
+VARIABLES_FILE = '/home/adam/printer_data/config/variables.cfg'
 GCODES_DIR     = '/home/adam/printer_data/gcodes'
 OUTPUT_NAME    = 'plr_resume.gcode'
 OUTPUT_FILE    = os.path.join(GCODES_DIR, OUTPUT_NAME)
