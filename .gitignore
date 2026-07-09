@@ -1,0 +1,9 @@
+.theme
+printer-[0-9]*_[0-9]*.cfg
+*.bak
+*.bkp
+*.zip
+*.swp
+*.tmp
+KAMP
+print_area_bed_mesh.cfg
